@@ -23,6 +23,10 @@ namespace DTC.Models.FA18.Misc
 		public int TACANChannel { get; set; }
 		public TACANBands TACANBand { get; set; }
 		public bool TACANToBeUpdated { get; set; }
+		public bool AAWPToBeUpdated { get; set; }
+		public int AAWP { get; set; }
+		public bool UFCIFFToBeUpdated { get; set; }
+		public bool UFCDLToBeUpdated { get; set; }
 		public bool EnableUpload { get; set; }
 
 		public MiscSystem()
@@ -35,6 +39,12 @@ namespace DTC.Models.FA18.Misc
 
 			TACANChannel = 1;
 			TACANBand = TACANBands.X;
+
+			AAWPToBeUpdated = true;
+			AAWP = 59;
+
+			UFCIFFToBeUpdated = true;
+			UFCDLToBeUpdated = true;
 
 			EnableUpload = true;
 		}
@@ -49,6 +59,18 @@ namespace DTC.Models.FA18.Misc
 				}
 			}
 			return TACANChannel.ToString();
+		}
+
+		public string SetAAWp(string txt)
+		{
+			if (int.TryParse(txt, out int val))
+			{
+				if (val >= 0 && val <= 59)
+				{
+					AAWP = val;
+				}
+			}
+			return AAWP.ToString();
 		}
 
 		public string SetBingo(string txt)

@@ -29,6 +29,33 @@ namespace DTC.Models.FA18.Upload
                 BuildRadarWarn(radAlt);
             if (_cfg.Misc.BlimTac)
                 BuildTacBlim(rmfd);
+            if (_cfg.Misc.AAWPToBeUpdated)
+                BuildAAWpt(rmfd);
+            if (_cfg.Misc.UFCIFFToBeUpdated)
+                BuildUFCIFF(ufc);
+            if (_cfg.Misc.UFCDLToBeUpdated)
+                BuildUFCDL(ufc);
+        }
+
+        private void selectWp0(Device rmfd, int i)
+        {
+            if (i < 35) // Half of waypoints, will seek up or down depending on what's closest
+            {
+                
+                AppendCommand(StartCondition("NOT_AT_WP0"));
+
+                AppendCommand(StartCondition("WP_LTE_34"));
+                AppendCommand(rmfd.GetCommand("OSB-13"));
+                AppendCommand(EndCondition("WP_LTE_34"));
+
+                AppendCommand(StartCondition("WP_GTE_35"));
+                AppendCommand(rmfd.GetCommand("OSB-12"));
+                AppendCommand(EndCondition("WP_GTE_35"));
+
+                AppendCommand(WaitShort());
+                AppendCommand(EndCondition("NOT_AT_WP0"));
+                selectWp0(rmfd, i + 1);
+            }
         }
 
         private void BuildBingo(DCS.Device ifei)
@@ -142,6 +169,71 @@ namespace DTC.Models.FA18.Upload
             }
 
             AppendCommand(ufc.GetCommand("OnOff"));
+        }
+
+        private void BuildAAWpt(DCS.Device rmfd)
+        {
+            AppendCommand(rmfd.GetCommand("OSB-18")); // MENU
+            AppendCommand(rmfd.GetCommand("OSB-18")); // MENU
+            AppendCommand(rmfd.GetCommand("OSB-02")); // HSI
+            AppendCommand(Wait());
+            AppendCommand(rmfd.GetCommand("OSB-10")); // DATA
+
+            selectWp0(rmfd, 0);
+
+            if (_cfg.Misc.AAWP <= 34)
+            {
+                for(var i = 0; i < _cfg.Misc.AAWP; i++)
+                {
+                    AppendCommand(rmfd.GetCommand("OSB-12")); // UP
+                }
+            }else
+            {
+                for(var i = 69; i > _cfg.Misc.AAWP; i--)
+                {
+                    AppendCommand(rmfd.GetCommand("OSB-13")); // DOWN
+                }
+            }
+
+            AppendCommand(rmfd.GetCommand("OSB-02")); // DATA
+            selectWp0(rmfd, 0);
+
+            AppendCommand(Wait());
+            AppendCommand(rmfd.GetCommand("OSB-18")); // MENU
+            AppendCommand(Wait());
+            AppendCommand(rmfd.GetCommand("OSB-18")); // MENU
+            AppendCommand(rmfd.GetCommand("OSB-15")); // FCS
+        }
+
+        private void BuildUFCIFF(DCS.Device ufc)
+        {
+            AppendCommand(ufc.GetCommand("AP"));
+            AppendCommand(ufc.GetCommand("IFF"));
+            AppendCommand(WaitShort());
+
+            AppendCommand(StartCondition("IFF_OFF"));
+            AppendCommand(ufc.GetCommand("OnOff"));
+            AppendCommand(EndCondition("IFF_OFF"));
+
+        }
+
+        private void BuildUFCDL(DCS.Device ufc)
+        {
+            AppendCommand(ufc.GetCommand("AP"));
+            AppendCommand(ufc.GetCommand("DL"));
+            AppendCommand(WaitShort());
+
+            AppendCommand(StartCondition("DL_OFF"));
+            AppendCommand(ufc.GetCommand("OnOff"));
+            AppendCommand(EndCondition("DL_OFF"));
+
+            AppendCommand(ufc.GetCommand("DL"));
+            AppendCommand(WaitShort());
+
+            AppendCommand(StartCondition("DL_OFF"));
+            AppendCommand(ufc.GetCommand("OnOff"));
+            AppendCommand(EndCondition("DL_OFF"));
+
         }
     }
 }

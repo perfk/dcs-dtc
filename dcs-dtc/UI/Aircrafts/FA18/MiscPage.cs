@@ -119,6 +119,45 @@ namespace DTC.UI.Aircrafts.FA18
                 _parent.DataChangedCallback();
             };
             this.Controls.Add(cboTacanBand);
+
+            left = padding;
+            top += padding + rowHeight;
+            var chkUpdateAAWP = new DTCCheckBox();
+            chkUpdateAAWP.RelatedTo = "AAWP";
+            chkUpdateAAWP.Checked = _misc.AAWPToBeUpdated;
+            chkUpdateAAWP.CheckedChanged += chk_OnChange;
+            this.Controls.Add(DTCCheckBox.Make(chkUpdateAAWP, left, top , chkWidth, rowHeight));
+            left += padding + chkWidth;
+
+            this.Controls.Add(DTCLabel.Make("A/A Wpt", left, top, colWidth, rowHeight));
+            left += padding + colWidth;
+            this.Controls.Add(MakeTextBox(left, top, colWidth, rowHeight, "990", _misc.AAWP.ToString(), (txt) =>
+            {
+                txt.Text = _misc.SetAAWp(txt.Text);
+                _parent.DataChangedCallback();
+            }));
+
+            left = padding;
+            top += padding + rowHeight;
+            var chkUpdateUFCIFF = new DTCCheckBox();
+            chkUpdateUFCIFF.RelatedTo = "UFCIFF";
+            chkUpdateUFCIFF.Checked = _misc.UFCIFFToBeUpdated;
+            chkUpdateUFCIFF.CheckedChanged += chk_OnChange;
+            this.Controls.Add(DTCCheckBox.Make(chkUpdateUFCIFF, left, top, chkWidth, rowHeight));
+            left += padding + chkWidth;
+
+            this.Controls.Add(DTCLabel.Make("UFC: IFF-ON", left, top, colWidth, rowHeight));
+
+            left = padding;
+            top += padding + rowHeight;
+            var chkUpdateUFCDL = new DTCCheckBox();
+            chkUpdateUFCDL.RelatedTo = "UFCIFF";
+            chkUpdateUFCDL.Checked = _misc.UFCDLToBeUpdated;
+            chkUpdateUFCDL.CheckedChanged += chk_OnChange;
+            this.Controls.Add(DTCCheckBox.Make(chkUpdateUFCDL, left, top, chkWidth, rowHeight));
+            left += padding + chkWidth;
+
+            this.Controls.Add(DTCLabel.Make("UFC: Datalink L4/L16-ON", left, top, colWidth, rowHeight));
         }
 
         private delegate void TextBoxChangedCallback(DTCTextBox txt);
@@ -201,6 +240,15 @@ namespace DTC.UI.Aircrafts.FA18
                     break;
                 case "TACAN":
                     _misc.TACANToBeUpdated = chk.Checked;
+                    break;
+                case "AAWP":
+                    _misc.AAWPToBeUpdated = chk.Checked;
+                    break;
+                case "UFCIFF":
+                    _misc.UFCIFFToBeUpdated = chk.Checked;
+                    break;
+                case "UFCDL":
+                    _misc.UFCDLToBeUpdated = chk.Checked;
                     break;
             }
             _parent.DataChangedCallback();

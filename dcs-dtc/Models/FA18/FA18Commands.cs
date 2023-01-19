@@ -117,6 +117,10 @@ namespace DTC.Models.FA18
 			cmds.AddCommand(new Command(3001, "OFF", -1, -1));
 			cmds.AddCommand(new Command(3001, "BYPASS", -1, 1));
 			AddDevice(cmds);
+
+			var rwr = new Device(53, "RWR");
+			rwr.AddCommand(new Command(3001, "ON", -1, 1));
+			AddDevice(rwr);
 		}
 
 		private void AddDevice(Device d)

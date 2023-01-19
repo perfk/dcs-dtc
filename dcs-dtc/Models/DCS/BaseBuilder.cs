@@ -31,7 +31,11 @@ namespace DTC.Models.DCS
 
 			return sb.ToString();
 		}
-
+		protected static string WaitShort()
+		{
+			var str = "{'device':'wait', 'delay': 100},";
+			return str.Replace("'", "\"");
+		}
 		protected static string Wait()
 		{
 			var str = "{'device':'wait', 'delay': 200},";

@@ -29,7 +29,19 @@ namespace DTC.UI.Aircrafts.FA18
             this.SuspendLayout();
 
             var top = padding;
-            var left = padding + 2 * (columnWidth + padding);
+            var left = padding;
+
+
+            var chkUpdateEWHUD = new DTCCheckBox();
+            chkUpdateEWHUD.RelatedTo = "EWHUD";
+            chkUpdateEWHUD.Checked = _cms.EWHUDToBeUpdated;
+            chkUpdateEWHUD.CheckedChanged += chk_OnChange;
+            this.Controls.Add(DTCCheckBox.Make(chkUpdateEWHUD, left, top, chkWidth, rowHeight));
+            left += padding + chkWidth;
+            this.Controls.Add(DTCLabel.Make("EW HUD - On", left, top, columnWidth+10, rowHeight));
+
+            top += rowHeight + padding;
+            left = padding + 2 * (columnWidth + padding);
 
             this.Controls.Add(DTCLabel.Make("Chaff Qty", left, top, columnWidth, rowHeight));
             left += columnWidth + padding;
@@ -126,9 +138,19 @@ namespace DTC.UI.Aircrafts.FA18
         private void chk_OnChange(object sender, EventArgs e)
         {
             var chk = ((DTCCheckBox)sender);
-            var program = _cms.Programs[int.Parse(chk.RelatedTo)];
-            program.ToBeUpdated = chk.Checked;
-            _parent.DataChangedCallback();
+
+            switch (chk.RelatedTo)
+            {
+                case "EWHUD":
+                    _cms.EWHUDToBeUpdated = chk.Checked;
+                    break;
+                default:
+                    var program = _cms.Programs[int.Parse(chk.RelatedTo)];
+                    program.ToBeUpdated = chk.Checked;
+                    _parent.DataChangedCallback();
+                    break;
+            }
+            
         }
     }
 }
