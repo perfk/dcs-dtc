@@ -228,15 +228,6 @@ local function checkConditionNotCMS()
 	return true
 end
 
-local function checkConditionCMS()
-	local table = parse_indication(2);
-	local str = table["ARM_1__id:1"]
-	if str == "ARM" then
-		return true
-	end
-	return false
-end
-
 local function checkConditionRWROff()
 	local table = parse_indication(2);
 	local str = table["HUD_1__id:1"]
@@ -447,14 +438,14 @@ local function checkCondition(condition)
 		return checkConditionNotAtWp0();
 	elseif condition == "AT_WP0" then
 		return  checkConditionAtWp0();
+
 	elseif condition == "WP_LTE_34" then
 		return checkConditionWpLTE34();
 	elseif condition == "WP_GTE_35" then
 		return checkConditionWpGTE35();
+
 	elseif condition == "CMS_NOT_STBY" then
 		return checkConditionNotCMS();
-	elseif condition == "CMS_STBY" then
-		return checkConditionCMS();
 	elseif condition == "RWR_OFF" then
 		return checkConditionRWROff();
 	elseif condition == "EWHUD_OFF" then

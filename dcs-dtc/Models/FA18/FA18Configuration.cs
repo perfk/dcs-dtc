@@ -3,6 +3,7 @@ using DTC.Models.FA18.Sequences;
 using DTC.Models.FA18.Radios;
 using DTC.Models.FA18.PrePlanned;
 using DTC.Models.FA18.CMS;
+using DTC.Models.FA18.AAWeapons;
 using Newtonsoft.Json;
 using DTC.Models.Base;
 using DTC.Models.FA18.Misc;
@@ -21,6 +22,7 @@ namespace DTC.Models.FA18
 		public PrePlannedSystem PrePlanned = new PrePlannedSystem();
 		public RadioSystem Radios = new RadioSystem();
 		public CMSystem CMS = new CMSystem();
+		public AAWeaponsSystem AAWeapons = new AAWeaponsSystem();
 		public MiscSystem Misc = new MiscSystem();
 
 		public string ToJson()
@@ -104,6 +106,10 @@ namespace DTC.Models.FA18
 			{
 				CMS = cfg.CMS;
 			}
+			if (cfg.AAWeapons != null)
+            {
+				AAWeapons = cfg.AAWeapons;
+            }
 		}
         internal static FA18Configuration FromCombatFliteXML(FA18Configuration previous, string file)
         {
