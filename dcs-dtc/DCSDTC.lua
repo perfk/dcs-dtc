@@ -33,8 +33,12 @@ local function parse_indication(indicator_id)  -- Thanks to [FSF]Ian code
 	local m = li:gmatch("-----------------------------------------\n([^\n]+)\n([^\n]*)\n")
 	while true do
     	local name, value = m()
-    	if not name then break end
-   			t[name]=value
+    	if not name then 
+			break 
+		elseif string.find(name, "_1__id:31") then
+			name = "140_1__id:31" -- mitigate lua gsub not liking the degree symbol
+		end
+   		t[name]=value
 	end
 	return t
 end
@@ -195,6 +199,137 @@ local function checkConditionNotAtWp0()
 	return true
 end
 
+local function checkConditionWpLTE34()
+	local table = parse_indication(4);
+	local str = table["WYPT_Page_Number"]
+	local num = tonumber(str)
+	if num and num <= 34 then
+		return true
+	end
+	return false
+end
+
+local function checkConditionWpGTE35()
+	local table = parse_indication(4);
+	local str = table["WYPT_Page_Number"]
+	local num = tonumber(str)
+	if num and num <= 34 then
+		return false
+	end
+	return true
+end
+
+local function checkConditionNotCMS()
+	local table = parse_indication(2);
+	local str = table["ARM_1__id:1"]
+	if str == "ARM" then
+		return false
+	end
+	return true
+end
+
+local function checkConditionRWROff()
+	local table = parse_indication(2);
+	local str = table["HUD_1__id:1"]
+	if str == "H" then
+		return false
+	end
+	return true
+end
+
+local function checkConditionEWHUD()
+	local table = parse_indication(2);
+	local str = table["HUD_1_box__id:2"]
+	if str then
+		return false
+	end
+	return true
+end
+
+local function checkConditionUFCIFFOff()
+	local table = parse_indication(6);
+	local str = table["UFC_ScratchPadString1Display"]
+	if str == "X" then
+		return false
+	end
+	return true
+end
+
+local function checkConditionUFCDLOff()
+	local table = parse_indication(6);
+	local str = table["UFC_ScratchPadString1Display"]
+	if str == "O" then
+		return false
+	end
+	return true
+end
+
+local function checkConditionHornetNotRadar()
+	local table = parse_indication(3);
+	local str = table["Radar_mode"]
+	if str == "RWS" then
+		return false
+	end
+	return true
+end
+
+local function checkConditionHornetNotAutoIFF()
+	local table = parse_indication(2);
+	local str = table["AUTO_1_box__id:2"]
+	if str then
+		return false
+	end
+	return true
+end
+
+local function checkConditionHornetBars(bars)
+	local table = parse_indication(3);
+	local str = table["1B_1__id:3"]
+	if str == bars then
+		return true
+	end
+	return false
+end
+
+local function checkConditionHornetRange(range)
+	local table = parse_indication(3);
+	local str = table["RadarRange_VS_scaleMax"]
+	if str == range then
+		return true
+	end
+	return false
+end
+
+local function checkConditionHornetAz(az)
+	local table = parse_indication(3);
+	log.write("DCS-DTC", 2, serializeTable(table))
+	local str = table["140_1__id:31"] -- lua gsub doesnt like the degree symbol
+	local a,i = string.find(str, "%d+")
+	str = string.sub(str, a, i)
+	if str == az then
+		return true
+	end
+	return false
+end
+
+local function checkConditionHornetPRF(prf)
+	local table = parse_indication(3);
+	local str = table["PDI_1__id:1"]
+	if str == prf then
+		return true
+	end
+	return false
+end
+
+local function checkConditionHornetTimeout(timeout)
+	local table = parse_indication(3);
+	local str = table[" _1__id:7"]
+	if str == timeout then
+		return true
+	end
+	return false
+end
+
 local function checkConditionBingoIsZero()
 	local table =parse_indication(5);
 	local str = table["txt_BINGO"]
@@ -287,7 +422,7 @@ end
 
 local function checkConditionRmfdNotSupt()
 	local table = parse_indication(3);
-	local str = table["SUPT_id:12"]
+	local str = table["SUPT_id:13"]
 	if str == "SUPT" then
 		return false
 	end 
@@ -303,6 +438,80 @@ local function checkCondition(condition)
 		return checkConditionNotAtWp0();
 	elseif condition == "AT_WP0" then
 		return  checkConditionAtWp0();
+
+	elseif condition == "WP_LTE_34" then
+		return checkConditionWpLTE34();
+	elseif condition == "WP_GTE_35" then
+		return checkConditionWpGTE35();
+
+	elseif condition == "CMS_NOT_STBY" then
+		return checkConditionNotCMS();
+	elseif condition == "RWR_OFF" then
+		return checkConditionRWROff();
+	elseif condition == "EWHUD_OFF" then
+		return checkConditionEWHUD();
+	elseif condition == "IFF_OFF" then
+		return checkConditionUFCIFFOff();
+	elseif condition == "DL_OFF" then
+		return checkConditionUFCDLOff();
+	elseif condition == "18_NOT_IN_AA" then
+		return checkConditionHornetNotRadar();
+	elseif condition == "AUTOIFF_OFF" then
+		return checkConditionHornetNotAutoIFF();
+
+	elseif condition == "BARS_1B" then
+		return checkConditionHornetBars("1B");
+	elseif condition == "BARS_2B" then
+		return checkConditionHornetBars("2B");
+	elseif condition == "BARS_4B" then
+		return checkConditionHornetBars("4B");
+	elseif condition == "BARS_6B" then
+		return checkConditionHornetBars("6B");
+
+	elseif condition == "RANGE_5" then
+		return checkConditionHornetRange("5");
+	elseif condition == "RANGE_10" then
+		return checkConditionHornetRange("10");
+	elseif condition == "RANGE_20" then
+		return checkConditionHornetRange("20");
+	elseif condition == "RANGE_40" then
+		return checkConditionHornetRange("40");
+	elseif condition == "RANGE_80" then
+		return checkConditionHornetRange("80");
+	elseif condition == "RANGE_160" then
+		return checkConditionHornetRange("160");
+
+	elseif condition == "AZ_20" then
+		return checkConditionHornetAz("20");
+	elseif condition == "AZ_40" then
+		return checkConditionHornetAz("40");
+	elseif condition == "AZ_60" then
+		return checkConditionHornetAz("60");
+	elseif condition == "AZ_80" then
+		return checkConditionHornetAz("80");
+	elseif condition == "AZ_140" then
+		return checkConditionHornetAz("140");
+
+	elseif condition == "PRF_INTL" then
+		return checkConditionHornetPRF("INTL");
+	elseif condition == "PRF_PDI" then
+		return checkConditionHornetPRF("PDI");
+	elseif condition == "PRF_MED" then
+		return checkConditionHornetPRF("MED");
+	elseif condition == "PRF_HI" then
+		return checkConditionHornetPRF("HI");
+
+	elseif condition == "Timeout_2" then
+		return checkConditionHornetTimeout("2");
+	elseif condition == "Timeout_4" then
+		return checkConditionHornetTimeout("4");
+	elseif condition == "Timeout_8" then
+		return checkConditionHornetTimeout("8");
+	elseif condition == "Timeout_16" then
+		return checkConditionHornetTimeout("16");
+	elseif condition == "Timeout_32" then
+		return checkConditionHornetTimeout("32");
+
 	elseif condition == "BINGO_ZERO" then
 		return  checkConditionBingoIsZero();
 	elseif condition:find("^IN_SEQ_") ~= nil then
@@ -385,6 +594,7 @@ function LuaExportBeforeNextFrame()
 				elseif skip then
 					nextIndex = i+1	
 				elseif startCondition then
+					log.write("DCS-DTC", log.ERROR, "startCondition: "..startCondition)
 					skipCondition = startCondition
 					skip = not checkCondition(startCondition)
 					nextIndex = i+1

@@ -97,6 +97,7 @@
     <Compile Include="Models\AH64\Waypoints\Waypoint.cs" />
     <Compile Include="Models\F16\TOS\TOSSetting.cs" />
     <Compile Include="Models\F16\TOS\TOSSystem.cs" />
+    <Compile Include="Models\FA18\AA Weapons\AAWeaponsSystem.cs" />
     <Compile Include="Models\FA18\CMS\CMSystem.cs" />
     <Compile Include="Models\FA18\CMS\Program.cs" />
     <Compile Include="Models\FA18\PrePlanned\PrePlannedCoordinate.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="Models\FA18\PrePlanned\PrePlannedSteerpoint.cs" />
     <Compile Include="Models\FA18\PrePlanned\PrePlannedSystem.cs" />
     <Compile Include="Models\FA18\Upload\CMSBuilder.cs" />
+    <Compile Include="Models\FA18\Upload\AAWeaponsBuilder.cs" />
     <Compile Include="Models\FA18\Upload\PrePlannedBuilder.cs" />
     <Compile Include="Models\FA18\Upload\SequenceBuilder.cs" />
     <Compile Include="Models\FA18\FA18Commands.cs" />
@@ -251,6 +253,12 @@
     </Compile>
     <Compile Include="UI\Aircrafts\FA18\PrePlannedEdit.Designer.cs">
       <DependentUpon>PrePlannedEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Aircrafts\FA18\AAWeaponsPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Aircrafts\FA18\AAWeaponsPage.Designer.cs">
+      <DependentUpon>AAWeaponsPage.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Aircrafts\FA18\WaypointEdit.cs">
       <SubType>UserControl</SubType>
